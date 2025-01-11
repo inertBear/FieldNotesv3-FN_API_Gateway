@@ -1,13 +1,17 @@
 version: '3'
 services:
+  # gateway
   fnapigw:
     image: fnapigw:latest
     container_name: fn_api_gw
     restart: always
     ports: 
       - 8080:8080
+    depends_on:
+      - mongodb
 
-  mongo:
+  # database
+  mongodb:
     image: mongo:latest
     container_name: mongodb
     restart: always

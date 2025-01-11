@@ -11,10 +11,9 @@ class LoginEndpointTest {
     @Test
     void testHelloEndpoint() {
         given()
-          .when().get("/gateway/login")
-          .then()
-             .statusCode(200)
-             .body(is("Hello from Quarkus REST"));
+                .when().get("/gateway/login?username=username&password=password")
+                .then()
+                .statusCode(200)
+                .body(is("Login Failed"));
     }
-
 }
