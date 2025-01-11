@@ -1,36 +1,47 @@
-package com.devhunter.Account;
+package com.devhunter.Payload;
 
-import org.bson.codecs.pojo.annotations.BsonProperty;
-
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
- * Represents a user account in Mongo DB
+ * Defines the interface for a login request
  */
-@MongoEntity(collection = "login")
-public class AccountEntity extends PanacheMongoEntity {
+@JsonPropertyOrder({ "username", "plaintextPassword" })
+public class LoginRequest {
 
-    @BsonProperty("username")
     private String username;
-    @BsonProperty("plaintextPassword")
     private String plaintextPassword;
 
-    public AccountEntity() {
-
-    }
-
-    public AccountEntity(String username, String plaintextPassword) {
+    public LoginRequest(String username, String plaintextPassword) {
         this.username = username;
         this.plaintextPassword = plaintextPassword;
     }
 
     public String getUsername() {
-        return this.username;
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPlaintextPassword() {
-        return this.plaintextPassword;
+        return plaintextPassword;
+    }
+
+    public void setPlaintextPassword(String plaintextPassword) {
+        this.plaintextPassword = plaintextPassword;
+    }
+
+    /**
+     * represent this object as a JSON String
+     * 
+     * @return
+     */
+    public String toJsonString() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this);
     }
 
     @Override
@@ -50,7 +61,7 @@ public class AccountEntity extends PanacheMongoEntity {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        AccountEntity other = (AccountEntity) obj;
+        LoginRequest other = (LoginRequest) obj;
         if (username == null) {
             if (other.username != null)
                 return false;

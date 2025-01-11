@@ -40,9 +40,9 @@ public class AccountHandler {
      * @param password
      * @return
      */
-    public boolean addUser(String username, String password) {
+    public boolean addUser(String username, String plaintextPassword) {
         try {
-            service.addNewAccount(new AccountEntity(username, password));
+            service.addNewAccount(new AccountEntity(username, plaintextPassword));
             logger.info("Add User Success!");
             return true;
         } catch (Exception e) {

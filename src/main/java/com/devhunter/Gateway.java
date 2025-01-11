@@ -3,13 +3,15 @@ package com.devhunter;
 import org.jboss.logging.Logger;
 
 import com.devhunter.Account.AccountHandler;
+import com.devhunter.Payload.LoginRequest;
+import com.devhunter.Payload.GatewayResponse;
+import com.devhunter.Payload.WellInfoRequest;
 
 import io.quarkus.runtime.Startup;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 /**
@@ -28,8 +30,9 @@ public class Gateway {
      */
     @Startup
     public void addDefaultUser() {
-        accountHandler.addUser("admin", "admin");
-        logger.info("Default Test User Created: [admin:admin]");
+        LoginRequest defaultAccount = new LoginRequest("admin", "admin");
+        accountHandler.addUser(defaultAccount.getUsername(), defaultAccount.getPlaintextPassword());
+        logger.info("Default Test User Created: " + defaultAccount.toJsonString());
     }
 
     /**
@@ -39,14 +42,29 @@ public class Gateway {
      * @param plaintextPassword
      * @return
      */
-    @GET
+    @POST
     @Path("/login")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String login(@QueryParam("username") String username, @QueryParam("password") String plaintextPassword) {
-        if (accountHandler.tryLogin(username, plaintextPassword)) {
-            return "Login Success";
+    @Produces(MediaType.APPLICATION_JSON)
+    public GatewayResponse login(LoginRequest account) {
+        if (accountHandler.tryLogin(account.getUsername(), account.getPlaintextPassword())) {
+            return new GatewayResponse(true, "Login Success");
         } else {
-            return "Login Failed";
+            return new GatewayResponse(false, "Login Failed");
         }
+    }
+
+    /**
+     * route a GUI request for Well Management
+     * 
+     * @param username
+     * @param plaintextPassword
+     * @return
+     */
+    @POST
+    @Path("/well")
+    @Produces(MediaType.APPLICATION_JSON)
+    public GatewayResponse wellManagementRequest(WellInfoRequest wellInfo) {
+        logger.info("Routing Well Request: " + wellInfo.toJsonString());
+        return new GatewayResponse(true, "WellInfo received");
     }
 }

@@ -48,7 +48,7 @@ public class AccountService {
     public void updatePassword(AccountEntity account, String newPassword) throws Exception {
         List<PanacheMongoEntityBase> list = AccountEntity.list("username", account.getUsername());
         if (list.isEmpty()) {
-            AccountEntity.update("password", newPassword).where("username", account.getUsername());
+            AccountEntity.update("plaintextPassword", newPassword).where("username", account.getUsername());
         } else {
             throw new Exception("No User [" + account.getUsername() + "]");
         }
@@ -62,11 +62,12 @@ public class AccountService {
      */
     public void tryLogin(AccountEntity account) throws Exception {
         // FIXME: encrypt passwords & use proper password management
-        List<PanacheMongoEntityBase> list = AccountEntity.list("username = ?1 and password = ?2", account.getUsername(),
-                account.getPassword());
+        List<PanacheMongoEntityBase> list = AccountEntity.list("username = ?1 and plaintextPassword = ?2",
+                account.getUsername(),
+                account.getPlaintextPassword());
         if (list.isEmpty()) {
             // failed login
-            throw new Exception("Incorrect username or password [" + account.getUsername() + "]");
+            throw new Exception("Incorrect username or plaintextPassword [" + account.getUsername() + "]");
         }
     }
 }
